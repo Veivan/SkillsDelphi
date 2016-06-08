@@ -30,8 +30,10 @@ type
 
     procedure SetPath();
     function GetIcon(FileName: String) : TIcon;
+    function GetLisFileName: string;
   public
     { Public declarations }
+    property LisFileName : string read GetLisFileName;
   end;
 
 var
@@ -54,14 +56,13 @@ begin
   if (Item.Index > FileListBox.Count) then Exit;
   Item.Caption := FileListBox.Items.Strings[Item.Index];
   Item.ImageIndex := Item.Index;
-  if ListView.ViewStyle <> vsReport then Exit;
-
 end;
 
 procedure TForm1.ListViewDblClick(Sender: TObject);
 begin
   if ListView.Selected <> nil then begin
-    Application.CreateForm(TFormEditor, FormEditor);
+    //Application.CreateForm(TFormEditor, FormEditor);
+    FormEditor := TFormEditor.CreateExt(LisFileName);
     FormEditor.ShowModal;
   end;
 end;
@@ -131,6 +132,11 @@ begin
     on e:Exception do
   end;
   Result := icon;
+end;
+
+function TForm1.GetLisFileName: string;
+begin
+  Result := FileListBox.Directory + '\' + ListView.Selected.Caption;
 end;
 
 end.

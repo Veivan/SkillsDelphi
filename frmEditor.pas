@@ -12,13 +12,8 @@ type
     CoolBar1: TCoolBar;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
-    Panel1: TPanel;
-    Button1: TButton;
-    Button2: TButton;
     Image1: TImage;
     procedure FormCreate(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -27,8 +22,12 @@ type
       Y: Integer);
   private
     { Private declarations }
+    FFileName : string;
+    AX, AY : Integer;
+    doDraw : boolean;
   public
     { Public declarations }
+    constructor CreateExt(AFileName: string);
   end;
 
 var
@@ -38,49 +37,63 @@ implementation
 
 {$R *.dfm}
 
+constructor TFormEditor.CreateExt(AFileName: string);
+begin
+  inherited Create(nil);
+  FFileName := AFileName;
+end;
+
 procedure TFormEditor.FormCreate(Sender: TObject);
-begin
-//  Image1.Picture.LoadFromFile('c:\1\IMG_9879.JPG');
-end;
-
-procedure TFormEditor.Button1Click(Sender: TObject);
-begin
-  if OpenPictureDialog1.Execute then
-    Image1.Picture.LoadFromFile(OpenPictureDialog1.FileName);
-end;
-
-procedure TFormEditor.Button2Click(Sender: TObject);
   var Pic: TPicture;
 begin
-  Pic:=TPicture.Create;
-  Pic.LoadFromFile('c:\1\IMG_9879.JPG');
-  Image1.Canvas.Draw(1,1,Pic.Graphic);
+  Pic := TPicture.Create;
+  try
+    Pic.LoadFromFile(FFileName);
+    Image1.Canvas.Draw(1,1,Pic.Graphic);
+  finally
+    Pic.Free;
+  end;
 end;
 
 procedure TFormEditor.Image1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  Image1.Canvas.MoveTo(X,Y);
+  //Image1.Canvas.MoveTo(X,Y);
+  FormEditor.Canvas.MoveTo(X,Y);
+  AX := X;
+  AY := Y;
+  doDraw := true;
 end;
 
 procedure TFormEditor.Image1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
   var r : Trect;
 begin
-  Image1.Canvas.LineTo(X,Y);
+  //Image1.Canvas.LineTo(X,Y);
   //Image1.Canvas.Rectangle(X,Y, X+ 50,Y + 50);
-
-    r := Rect(X,Y,X+100,Y+100);
-   Image1.Canvas.Brush.Color := clBlack;
-  Image1.Canvas.FrameRect(r);
-  Image1.Canvas.FrameRect(r);
-
+  r := Rect(AX,AY,X,Y);
+  //Image1.Canvas.Brush.Color := clBlack;
+  //Image1.Canvas.FrameRect(r);
+  FormEditor.Canvas.Brush.Color := clBlack;
+  FormEditor.Canvas.FrameRect(r);
+  doDraw := false;
 end;
 
 procedure TFormEditor.Image1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
+  var r : Trect;
 begin
-//
+  if not doDraw then Exit;
+
+//  FormEditor.Canvas.fillrect(FormEditor.Canvas.cliprect);
+//  InValidateRect(FormEditor.handle,NIL,True);
+  PatBlt(FormEditor.Canvas.Handle, 0, 0,
+    FormEditor.ClientWidth, FormEditor.ClientHeight, WHITENESS);
+  Image1.Repaint;
+
+  r := Rect(AX,AY, X,Y);
+  FormEditor.Canvas.Brush.Color := clBlack;
+  FormEditor.Canvas.FrameRect(r);
 end;
 
 end.

@@ -10,6 +10,5 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TFormEditor, FormEditor);
   Application.Run;
 end.
