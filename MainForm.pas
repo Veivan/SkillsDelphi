@@ -35,6 +35,7 @@ type
     function GetTile(FileName: String) : TBitmap;
     function GetLisFileName: string;
     procedure ClearImageList();
+    procedure AddBitmap(ImageList: TImageList; Bmp: TBitmap; BkColor: TColor);
   public
     { Public declarations }
     property LisFileName : string read GetLisFileName;
@@ -81,7 +82,6 @@ begin
  // for pic in ImageList.GetEnumerator do
 //   pic.Free;
    for i := ImageList.Count - 1 downto 0 do begin
-    //ImageList.GetIcon(i, icon);
     ImageList.GetBitmap(i, pic);
     pic.Free;
   end;
@@ -91,16 +91,19 @@ end;
 procedure TForm1.DirectoryListBox1Change(Sender: TObject);
 var i : integer; fname : string; icon : TIcon;  pic : TBitmap;
 begin
+  ListView.Items.Count := FileListBox.Count;
+  SetPath();
   ClearImageList();
   for i := 0 to FileListBox.Count - 1 do begin
     fname := FileListBox.Directory + '\' + FileListBox.Items.Strings[i];
     pic := TBitmap.Create;
     pic := GetTile(fname);
-    ImageList.Add(pic, nil);
+
+    AddBitmap(ImageList, pic, clFuchsia);
+
+    //ImageList.Add(pic, nil);
   end;
   ListView.LargeImages := ImageList;
-  ListView.Items.Count := FileListBox.Count;
-  SetPath();
   ListView.Repaint;
 end;
 
@@ -146,7 +149,6 @@ end;
 function TForm1.GetTile(FileName: String) : TBitmap;
 var
   Pic: TPicture;
-  b : TBitmap;
 begin
   Pic := TPicture.Create;
   try
@@ -161,6 +163,21 @@ end;
 function TForm1.GetLisFileName: string;
 begin
   Result := FileListBox.Directory + '\' + ListView.Selected.Caption;
+end;
+
+procedure TForm1.AddBitmap(ImageList: TImageList; Bmp: TBitmap; BkColor: TColor);
+var
+  mask : TBitmap;
+begin
+  mask := TBitmap.Create;
+  try
+    mask.Assign(Bmp);
+    mask.Canvas.Brush.Color := BkColor;
+    mask.Monochrome := true;
+    ImageList.Add(Bmp, mask);
+  finally
+    mask.Free;
+  end;
 end;
 
 end.
