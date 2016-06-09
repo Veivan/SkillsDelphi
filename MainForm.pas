@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ComCtrls, ShellCtrls, StdCtrls, FileCtrl,
-  ShellApi, ShlObj, ImgList, ExtDlgs;
+  Dialogs, ExtCtrls, ComCtrls, ShellCtrls, StdCtrls,
+  ImgList, ExtDlgs, FileCtrl;
 
 type
   TForm1 = class(TForm)
@@ -15,12 +15,9 @@ type
     DirectoryListBox1: TDirectoryListBox;
     FileListBox: TFileListBox;
     Splitter1: TSplitter;
-    Button1: TButton;
     ListView: TListView;
     ImageList: TImageList;
-    OpenPictureDialog1: TOpenPictureDialog;
     smImage: TImage;
-    procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure DirectoryListBox1Change(Sender: TObject);
     procedure ListViewDblClick(Sender: TObject);
@@ -28,14 +25,9 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
-    FIShellFolder,
-    FIDesktopFolder: IShellFolder;
-
     procedure SetPath();
     function GetTile(FileName: String) : TBitmap;
     function GetLisFileName: string;
-    procedure ClearImageList();
-    procedure AddBitmap(ImageList: TImageList; Bmp: TBitmap; BkColor: TColor);
   public
     { Public declarations }
     property LisFileName : string read GetLisFileName;
@@ -43,6 +35,7 @@ type
 
 var
   Form1: TForm1;
+const cPicSize = 32;
 
 implementation
 
@@ -52,13 +45,18 @@ uses frmEditor;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  //DirectoryListBox1.Align := alClient;
-  DirectoryListBox1.Directory := 'Z:\vmshared\1';
+  DirectoryListBox1.Align := alClient;
+//  DirectoryListBox1.Directory := 'Z:\vmshared\1';
+  with ImageList, smImage do begin
+    Width := cPicSize;
+    Height := cPicSize;
+  end;
+  ListView.LargeImages := ImageList;
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  ClearImageList();
+  ImageList.Clear;
 end;
 
 procedure TForm1.ListViewData(Sender: TObject; Item: TListItem);
@@ -76,34 +74,22 @@ begin
   end;
 end;
 
-procedure TForm1.ClearImageList;
-var i : integer; icon : TIcon; pic : TBitmap;
-begin
- // for pic in ImageList.GetEnumerator do
-//   pic.Free;
-   for i := ImageList.Count - 1 downto 0 do begin
-    ImageList.GetBitmap(i, pic);
-    pic.Free;
-  end;
-  ImageList.Clear;
-end;
-
 procedure TForm1.DirectoryListBox1Change(Sender: TObject);
-var i : integer; fname : string; icon : TIcon;  pic : TBitmap;
+var i : integer; fname : string; pic : TBitmap;
 begin
   ListView.Items.Count := FileListBox.Count;
   SetPath();
-  ClearImageList();
-  for i := 0 to FileListBox.Count - 1 do begin
-    fname := FileListBox.Directory + '\' + FileListBox.Items.Strings[i];
-    pic := TBitmap.Create;
-    pic := GetTile(fname);
-
-    AddBitmap(ImageList, pic, clFuchsia);
-
-    //ImageList.Add(pic, nil);
+  ImageList.Clear;
+  pic := TBitmap.Create;
+  try
+    for i := 0 to FileListBox.Count - 1 do begin
+      fname := FileListBox.Directory + '\' + FileListBox.Items.Strings[i];
+      pic.Assign(GetTile(fname));
+      ImageList.Add(pic, nil);
+    end;
+  finally
+    pic.Free;
   end;
-  ListView.LargeImages := ImageList;
   ListView.Repaint;
 end;
 
@@ -122,38 +108,19 @@ begin
   end;
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
-var
-  icon:TIcon; w : integer;  FileName: string; h : hIcon;  IconIndex : word;
-    Pic: TPicture;
-  b : TBitmap;
-
-begin
-//  ShowMessage(FileListBox.Directory + ' ' + FileListBox.Items.Strings[0]);
-
-  if OpenPictureDialog1.Execute then begin
-    Pic := TPicture.Create;
-    b := TBitmap.Create;
-    try
-      Pic.LoadFromFile(OpenPictureDialog1.FileName);
-      smImage.Canvas.Draw(1,1,Pic.Graphic);
-      b := smImage.Picture.Bitmap;
-      b.SaveToFile('z:\vmshared\1\qq.bmp');
-      ListView.Canvas.Draw(32, 32, b);
-    finally
-      Pic.Free;
-    end;
-  end;
-end;
-
 function TForm1.GetTile(FileName: String) : TBitmap;
 var
-  Pic: TPicture;
+  Pic: TPicture; r : TRect;
 begin
   Pic := TPicture.Create;
   try
     Pic.LoadFromFile(FileName);
-    smImage.Canvas.Draw(1,1,Pic.Graphic);
+    // Canvas cleaning
+    PatBlt(smImage.Canvas.Handle, 0, 0,
+      smImage.ClientWidth, smImage.ClientHeight, WHITENESS);
+
+    r := Rect(1,1,cPicSize,cPicSize);
+    smImage.Canvas.StretchDraw(r, Pic.Graphic);
   finally
     Pic.Free;
   end;
@@ -163,21 +130,6 @@ end;
 function TForm1.GetLisFileName: string;
 begin
   Result := FileListBox.Directory + '\' + ListView.Selected.Caption;
-end;
-
-procedure TForm1.AddBitmap(ImageList: TImageList; Bmp: TBitmap; BkColor: TColor);
-var
-  mask : TBitmap;
-begin
-  mask := TBitmap.Create;
-  try
-    mask.Assign(Bmp);
-    mask.Canvas.Brush.Color := BkColor;
-    mask.Monochrome := true;
-    ImageList.Add(Bmp, mask);
-  finally
-    mask.Free;
-  end;
 end;
 
 end.

@@ -1,6 +1,7 @@
 object FormEditor: TFormEditor
   Left = 518
   Top = 179
+  BorderStyle = bsDialog
   Caption = 'Editor'
   ClientHeight = 443
   ClientWidth = 494
@@ -22,6 +23,7 @@ object FormEditor: TFormEditor
     Align = alClient
     Center = True
     Proportional = True
+    Stretch = True
     Transparent = True
     OnMouseDown = Image1MouseDown
     OnMouseMove = Image1MouseMove

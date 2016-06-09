@@ -38,15 +38,6 @@ object Form1: TForm1
       DirList = DirectoryListBox1
       TabOrder = 0
     end
-    object Button1: TButton
-      Left = 356
-      Top = 4
-      Width = 75
-      Height = 25
-      Caption = 'Button1'
-      TabOrder = 1
-      OnClick = Button1Click
-    end
   end
   object Panel2: TPanel
     Left = 0
@@ -62,6 +53,7 @@ object Form1: TForm1
       Height = 32
       Center = True
       Proportional = True
+      Stretch = True
       Visible = False
     end
     object DirectoryListBox1: TDirectoryListBox
@@ -81,6 +73,7 @@ object Form1: TForm1
       Mask = '*.jpg;*.bmp;*.gif;*.ico'
       ShowGlyphs = True
       TabOrder = 1
+      Visible = False
     end
   end
   object ListView: TListView
@@ -100,11 +93,9 @@ object Form1: TForm1
     OnDblClick = ListViewDblClick
   end
   object ImageList: TImageList
+    Height = 32
+    Width = 32
     Left = 108
     Top = 45
-  end
-  object OpenPictureDialog1: TOpenPictureDialog
-    Left = 272
-    Top = 20
   end
 end
