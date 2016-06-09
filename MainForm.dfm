@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 283
-  Top = 88
+  Left = 461
+  Top = 155
   Caption = 'Explorer'
   ClientHeight = 462
   ClientWidth = 509
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -54,6 +55,15 @@ object Form1: TForm1
     Height = 421
     Align = alLeft
     TabOrder = 1
+    object smImage: TImage
+      Left = 44
+      Top = 304
+      Width = 32
+      Height = 32
+      Center = True
+      Proportional = True
+      Visible = False
+    end
     object DirectoryListBox1: TDirectoryListBox
       Left = 4
       Top = 48
@@ -92,5 +102,9 @@ object Form1: TForm1
   object ImageList: TImageList
     Left = 108
     Top = 45
+  end
+  object OpenPictureDialog1: TOpenPictureDialog
+    Left = 272
+    Top = 20
   end
 end

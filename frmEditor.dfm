@@ -1,6 +1,6 @@
 object FormEditor: TFormEditor
-  Left = 331
-  Top = 143
+  Left = 518
+  Top = 179
   Caption = 'Editor'
   ClientHeight = 443
   ClientWidth = 494
@@ -39,7 +39,6 @@ object FormEditor: TFormEditor
     Align = alLeft
     Bands = <>
     Vertical = True
-    ExplicitHeight = 546
     object sbRect: TSpeedButton
       Left = 8
       Top = 8
@@ -112,9 +111,5 @@ object FormEditor: TFormEditor
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
       OnClick = sbEllipseClick
     end
-  end
-  object OpenPictureDialog1: TOpenPictureDialog
-    Left = 336
-    Top = 16
   end
 end

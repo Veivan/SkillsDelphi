@@ -10,7 +10,6 @@ type
   TDrawKind = (None, ARect, AEllipse);
 
   TFormEditor = class(TForm)
-    OpenPictureDialog1: TOpenPictureDialog;
     CoolBar: TCoolBar;
     sbRect: TSpeedButton;
     sbEllipse: TSpeedButton;
